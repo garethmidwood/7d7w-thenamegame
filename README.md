@@ -1,7 +1,10 @@
 # The Name Game
 Each player adds a variety of names into a 'hat'
+
 When the game starts, each player takes their turn.
+
 On a turn, the system will choose a name from the 'hat' and present it *only* to the person whose turn it is
+
 On your turn you must - describe/use a single word/act out - the person displayed on screen
 
 # Built with
