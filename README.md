@@ -7,6 +7,8 @@ On a turn, the system will choose a name from the 'hat' and present it *only* to
 
 On your turn you must - describe/use a single word/act out - the person displayed on screen
 
+*You can't play this game solely with this app, you should be on a video call with your friends too*
+
 # Built with
 This app is built using meteor (https://meteor.com) with react (https://reactjs.org)
 
