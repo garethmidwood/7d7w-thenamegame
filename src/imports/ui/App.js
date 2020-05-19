@@ -6,6 +6,9 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { Tasks } from '../api/tasks.js';
 import Task from './Task.js';
 
+import { userstatus } from '../api/userstatus.js';
+import UserStatus from './UserStatus.js';
+
 import AccountsUIWrapper from './AccountsUIWrapper.js';
  
 // App component - represents the whole app
@@ -55,6 +58,23 @@ class App extends Component {
       );
     });
   }
+
+  renderOnlineUsers() {
+    let onlineUsers = this.props.onlineUsers;
+
+    return onlineUsers.map((onlineUser) => {
+      const currentUserId = this.props.currentUser && this.props.currentUser._id;
+      const isYou = onlineUser._id === currentUserId;
+ 
+      return (
+        <UserStatus
+          key={onlineUser._id}
+          onlineUser={onlineUser}
+          isYou={isYou}
+        />
+      );
+    });    
+  }
  
   render() {
     return (
@@ -74,6 +94,11 @@ class App extends Component {
 
           <AccountsUIWrapper />
  
+          <h3>Who's online?</h3>
+          <ul>
+            {this.renderOnlineUsers()}
+          </ul>          
+
           { this.props.currentUser ?
             <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
               <input
@@ -95,9 +120,11 @@ class App extends Component {
 
 export default withTracker(() => {
   Meteor.subscribe('tasks');
+  Meteor.subscribe('userstatus');
 
   return {
     tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
+    onlineUsers: Meteor.users.find({ "status.online": true }).fetch(),
     incompleteCount: Tasks.find({ checked: { $ne: true } }).count(),
     currentUser: Meteor.user(),
   };
