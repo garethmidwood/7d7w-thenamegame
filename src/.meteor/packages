@@ -24,3 +24,4 @@ accounts-ui
 accounts-password
 meteortesting:mocha
 mizzao:user-status
+ostrio:flow-router-extra
