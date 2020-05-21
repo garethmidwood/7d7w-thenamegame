@@ -1,7 +1,7 @@
 import React from 'react'
 
 const App = props => {
-  return props.content
+  return props.content || null
 }
 
 export default App

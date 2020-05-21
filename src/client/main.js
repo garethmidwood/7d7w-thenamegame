@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
  
 import '../imports/startup/accounts-config.js';
-import App from '../imports/ui/App.js';
+import App from '../imports/ui/App.jsx';
 import './routes.js';
  
 Meteor.startup(() => {
