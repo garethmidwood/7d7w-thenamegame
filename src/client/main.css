@@ -48,14 +48,21 @@ form {
   margin-bottom: -10px;
   position: relative;
 }
+
+.game-controls button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+}
  
 .new-task input {
   box-sizing: border-box;
   padding: 10px 0;
-  background: transparent;
-  border: none;
+  background: white;
+  border: 5px solid black;
   width: 100%;
-  padding-right: 80px;
+  padding: 15px 80px 15px 15px;
+  margin: 10px 0;
   font-size: 1em;
 }
  

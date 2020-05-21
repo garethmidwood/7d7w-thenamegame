@@ -2,18 +2,12 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
- 
-import { Tasks } from '../../api/tasks.js';
-import Task from '../entities/Task.jsx';
 
-import { userstatus } from '../../api/users.js';
-import UserStatus from '../entities/Userstatus.jsx';
-
-import AccountsUIWrapper from '../components/AccountsUIWrapper.jsx';
-
+import { Tasks } from '../../../api/tasks.js';
+import Task from '../../entities/Task.jsx';
 
 class AddNames extends Component {
-  handleSubmit(event) {
+  handleNewTaskSubmit(event) {
     event.preventDefault();
  
     // Find the text field via the React ref
@@ -25,7 +19,7 @@ class AddNames extends Component {
     ReactDOM.findDOMNode(this.refs.textInput).value = '';
   }
 
-  renderTasks() {
+  renderNameList() {
     let filteredTasks = this.props.tasks;
 
     return filteredTasks.map((task) => {
@@ -42,62 +36,32 @@ class AddNames extends Component {
     });
   }
 
-  renderOnlineUsers() {
-    let onlineUsers = this.props.onlineUsers;
-
-    return onlineUsers.map((onlineUser) => {
-      const currentUserId = this.props.currentUser && this.props.currentUser._id;
-      const isYou = onlineUser._id === currentUserId;
- 
-      return (
-        <UserStatus
-          key={onlineUser._id}
-          onlineUser={onlineUser}
-          isYou={isYou}
-        />
-      );
-    });    
-  }
- 
-  render() {
+  render() { 
     return (
-      <div className="container">
-        <header>
-        <h1>The Name Game</h1>
+        <div>
 
-          <AccountsUIWrapper />
- 
-          <h3>Who's online?</h3>
+          <form className="new-task" onSubmit={this.handleNewTaskSubmit.bind(this)} >
+            <input
+              type="text"
+              ref="textInput"
+              placeholder="Type to add a new person"
+            />
+          </form>
+
+          <h2>The names you added: </h2>
           <ul>
-            {this.renderOnlineUsers()}
+            {this.renderNameList()}
           </ul>
-
-          { this.props.currentUser ?
-            <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
-              <input
-                type="text"
-                ref="textInput"
-                placeholder="Type to add a new person"
-              />
-            </form> : ''
-          }
-        </header>
- 
-        <ul>
-          {this.renderTasks()}
-        </ul>
-      </div>
+        </div>
     );
   }
 }
 
 export default withTracker(() => {
   Meteor.subscribe('tasks');
-  Meteor.subscribe('userstatus');
 
   return {
     tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
-    onlineUsers: Meteor.users.find({ "status.online": true }).fetch(),
     currentUser: Meteor.user(),
   };
 })(AddNames);

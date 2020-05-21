@@ -46,7 +46,7 @@ class HomePage extends Component {
           */}
           { this.props.currentUser ?
             <div>
-              Click here to join the game and <a href="/game/add-names">add some names</a>
+              Click here to join the game and <a href="/game/play">add some names</a>
             </div>
             : ''
           }
