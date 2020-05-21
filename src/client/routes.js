@@ -4,7 +4,7 @@ import { mount } from 'react-mounter'
 
 import App from '../imports/ui/App.jsx'
 import HomePage from '../imports/ui/pages/HomePage.jsx'
-import AddNamesPage from '../imports/ui/pages/AddNamesPage.jsx'
+import GamePage from '../imports/ui/pages/GamePage.jsx'
 
 
 
@@ -13,7 +13,7 @@ FlowRouter.route('/', {
   name: 'Home',
   triggersEnter: [() => {
     if (Meteor.userId()) {
-      FlowRouter.go('/game/add-names')
+      FlowRouter.go('/game/play')
     }
   }],
   action(){
@@ -37,14 +37,9 @@ const gameRoutes = FlowRouter.group({
 });
 
 // pre-game, add some names to the list
-gameRoutes.route('/add-names', {
-  name: 'Add names',
-  triggersEnter: [() => {
-    if (!Meteor.userId()) {
-      FlowRouter.go("/");
-    }
-  }],
+gameRoutes.route('/play', {
+  name: 'Play',
   action(){
-    mount(App, { content: <AddNamesPage /> })
+    mount(App, { content: <GamePage /> })
   }
 })

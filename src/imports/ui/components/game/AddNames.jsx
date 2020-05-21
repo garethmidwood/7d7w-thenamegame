@@ -9,8 +9,10 @@ import Task from '../entities/Task.jsx';
 import { userstatus } from '../../api/users.js';
 import UserStatus from '../entities/Userstatus.jsx';
 
+import AccountsUIWrapper from '../components/AccountsUIWrapper.jsx';
 
-class AddNamesPage extends Component {
+
+class AddNames extends Component {
   handleSubmit(event) {
     event.preventDefault();
  
@@ -62,18 +64,20 @@ class AddNamesPage extends Component {
       <div className="container">
         <header>
         <h1>The Name Game</h1>
+
+          <AccountsUIWrapper />
  
           <h3>Who's online?</h3>
           <ul>
             {this.renderOnlineUsers()}
-          </ul>          
+          </ul>
 
           { this.props.currentUser ?
             <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
               <input
                 type="text"
                 ref="textInput"
-                placeholder="Type to add new tasks"
+                placeholder="Type to add a new person"
               />
             </form> : ''
           }
@@ -96,4 +100,4 @@ export default withTracker(() => {
     onlineUsers: Meteor.users.find({ "status.online": true }).fetch(),
     currentUser: Meteor.user(),
   };
-})(AddNamesPage);
+})(AddNames);
