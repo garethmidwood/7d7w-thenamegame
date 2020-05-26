@@ -166,6 +166,7 @@ form {
   align-items: center;
   height: 100%;
   width: 100%;
+  text-align: center;
 }
 
 .container div.login-close-text-clear {
@@ -199,10 +200,6 @@ form {
 .root-react-component-countdown-timer div  {
   display: inline;
   font-size: 2em;
-}
-
-.countBox > div {
-  direction: rtl;
 }
 
 .countBox > div:nth-child(2) {

@@ -73,9 +73,11 @@ class Play extends Component {
         
         <Countdown />
 
+        <p>{this.props.numberOfRemainingNames} names left in play</p>
+
         <form className="game-controls play-controls" onSubmit={this.handleControlFormSubmit.bind(this)}>
           <button ref="passButton" onClick={this.handlePass.bind(this)}>Pass</button>
-          <button ref="nextButton" onClick={this.handleNext.bind(this)}>Next</button>
+          <button ref="nextButton" onClick={this.handleNext.bind(this)}>Got it</button>
         </form>
       </div>
     );
@@ -119,6 +121,7 @@ export default withTracker(() => {
   return {
     tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
     currentUser: Meteor.user(),
+    numberOfRemainingNames: GameConfigs.findOne('currentRound').namesToPlay.length,
     activePlayer: GameConfigs.findOne("activePlayer"),
     currentPlayerEndTime: GameConfigs.findOne("playerTurnCompleteTime"),
     yourePlaying: ( Meteor.user() && GameConfigs.findOne("activePlayer").value && GameConfigs.findOne("activePlayer").value.username ==  Meteor.user().username),

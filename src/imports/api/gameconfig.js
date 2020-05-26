@@ -138,6 +138,30 @@ const gameConfigFuncs = {
     if (newPlayersStillToPlay.length == 0) {
       GameConfigs.update('inProgress', { $set: { value: false } });
     }
+  },
+
+
+  getFullOnlineUserList() {
+    let onlineUsers = [];
+    Meteor.users.find({ 'status.online': true }).fetch().forEach(element => {
+      onlineUsers.push({
+        '_id': element._id,
+        'name': element.username
+      });
+    });
+
+    return onlineUsers;
+  },
+  getFullNamesList() {
+    let nameList = [];
+    Tasks.find().fetch().forEach(element => {
+      nameList.push({
+        '_id': element._id,
+        'name': element.text
+      });
+    });
+
+    return nameList;
   }
 };
  
@@ -152,22 +176,10 @@ Meteor.methods({
       GameConfigs.update('inProgress', { $set: { value: true } });
     
       // get a list of all the users that are currently online
-      let onlineUsers = [];
-      Meteor.users.find({ 'status.online': true }).fetch().forEach(element => {
-        onlineUsers.push({
-          '_id': element._id,
-          'name': element.username
-        });
-      });
+      var onlineUsers = gameConfigFuncs.getFullOnlineUserList();
 
       // get a list of all of the names that have been added to the pot
-      let nameList = [];
-      Tasks.find().fetch().forEach(element => {
-        nameList.push({
-          '_id': element._id,
-          'name': element.text
-        });
-      });
+      var nameList = gameConfigFuncs.getFullNamesList();
 
       GameConfigs.update(
         'currentRound',
