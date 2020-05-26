@@ -10,17 +10,26 @@ import CountdownTimer from "react-component-countdown-timer";
 class Countdown extends Component {
 
     render() {
-        var theEndTime = new Date(this.props.currentPlayerEndTime.value);
-        var currentTime = new Date();
+        // the code below is hanging onto the previous end time on the CLIENT side,
+        // so it's not picking up the correct 30 second allocation.
+        // bodged it for the time being by hard coding 30 seconds in the countdown settings.
 
-        const diffTime = Math.abs(currentTime.getTime() - theEndTime.getTime());
-        console.log('working out the remaining time in ui/components/game/Countdown.jsx');
-        console.log(diffTime);
+        // var theEndTime = this.props.currentPlayerEndTime.value;
+        // var currentTime = new Date();
+
+        // console.log(this.props.currentPlayerEndTime);
+        // const diffTime = Math.ceil((theEndTime - currentTime.getTime()) / 1000);
+        // console.log('time calc ', theEndTime, ' - ', currentTime.getTime());
+        // console.log(diffTime, ' seconds given');
+
+        // if (diffTime < 0) {
+        //     return null;
+        // }
 
         var yourePlaying = this.props.yourePlaying;
 
         var settings = {
-            count: 5,
+            count: 30,
             border: true,
             showTitle: true,
             noPoints: true,

@@ -54,8 +54,9 @@ if (Meteor.isServer) {
 const gameConfigFuncs = {
   startTurnTimer() {
     var endTime = new Date();
-    endTime.setSeconds(endTime.getSeconds() + 300);
-    GameConfigs.update('playerTurnCompleteTime', { $set: { value: endTime.toISOString() } });
+    // add on 30 seconds
+    var endTimeStamp = endTime.getTime() + 30000;
+    GameConfigs.update('playerTurnCompleteTime', { $set: { value: endTimeStamp } });
   },
 
 
@@ -121,6 +122,8 @@ const gameConfigFuncs = {
  
     console.log('setting next player to ', nextPlayer.username);
     GameConfigs.update('activePlayer', { $set: { value: nextPlayer } });
+
+    this.startTurnTimer();
   },
   removeCurrentPlayerFromToPlayList() {
     // remove current player from usersToPlay list
