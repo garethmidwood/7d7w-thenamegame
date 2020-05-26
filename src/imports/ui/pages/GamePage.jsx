@@ -27,27 +27,38 @@ class GamePage extends Component {
   renderGameInPlay() {
     return (
       <div>
-        <form className="stop-game game-controls " onSubmit={this.handleStopGame.bind(this)} >
-          <button>Stop the game</button>
-        </form>
-
         <Play />
       </div>
     );
   }
 
+  renderAdminControls() {
+    return (
+      <form className="start-game game-controls play-controls" onSubmit={this.handleStartGame.bind(this)} >
+        <button>Start the game</button>
+      </form>
+    );
+  }
+
   renderGameStopped() {
     return (
-      <div>
-        <AccountsUIWrapper />
+      <div id="game-wrapper">
+        <div id="game-screen-stopped">
 
-        <OnlineUsers />
+          <h1>The Name Game</h1>
 
-        <form className="start-game game-controls " onSubmit={this.handleStartGame.bind(this)} >
-          <button>Start the game</button>
-        </form>
+          <AccountsUIWrapper />
 
-        <AddNames />
+          <AddNames />
+
+          {this.props.isAdmin
+          ? this.renderAdminControls()
+          : ''}
+        </div>
+
+        <div id="game-screen-user-list">
+          <OnlineUsers />
+        </div>
       </div>
     );
   }
@@ -55,14 +66,10 @@ class GamePage extends Component {
   render() {
     return (
       <div className="container">
-        <header>
-          <h1>The Name Game</h1>
- 
-          { this.props.gameInProgress && this.props.gameInProgress.value ?
+        { this.props.gameInProgress && this.props.gameInProgress.value ?
             this.renderGameInPlay() :
             this.renderGameStopped()
           }
-        </header>
       </div>
     );
   }
@@ -75,6 +82,7 @@ export default withTracker(() => {
     gameconfig: GameConfigs.find({}).fetch(),
     gameInProgress: GameConfigs.findOne("inProgress"),
     gameCurrentRound: GameConfigs.findOne("currentRound"),
-    currentUser: Meteor.user()
+    currentUser: Meteor.user(),
+    isAdmin: (Meteor.user() && Meteor.user().username == 'gmidwood')
   };
 })(GamePage);

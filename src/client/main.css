@@ -14,25 +14,54 @@ body {
   padding: 0;
   margin: 0;
  
-  font-size: 14px;
+  font-size: 3em;
 }
  
 .container {
-  max-width: 600px;
   margin: 0 auto;
   min-height: 100%;
   background: white;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 50px;
 }
  
 header {
-  background: #d2edf4;
-  background-image: linear-gradient(to bottom, #d0edf5, #e1e5f0 100%);
-  padding: 20px 15px 15px 15px;
   position: relative;
 }
  
 #login-buttons {
   display: block;
+}
+
+.login-form,
+.accounts-dialog * {
+  font-size: 2em;
+}
+
+#login-dropdown-list {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+  padding: 50px;
+  width: auto;
+}
+
+#login-buttons .login-button, .accounts-dialog .login-button {
+  font-size: 2em;
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+
+.accounts-dialog > .login-close-text {
+  font-size: 3em;
 }
  
 h1 {
@@ -49,12 +78,141 @@ form {
   position: relative;
 }
 
-.game-controls button {
-  display: block;
-  width: 100%;
-  padding: 10px;
+.play-controls,
+.admin-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  margin: 0;
 }
- 
+
+.play-controls,
+.admin-controls,
+.start-game {
+  z-index: 3;
+}
+
+
+
+.play-controls button,
+.admin-controls button {
+  flex-basis: 50%;
+  font-size: 2em;
+  margin: 0;
+  padding: 30px;
+  text-transform: uppercase;
+  height: 300px;
+  background-color: white;
+}
+
+.start-game button {
+  flex-basis: 100%;
+}
+
+.play-controls button:nth-child(2) {
+  border-left: 10px solid black;
+}
+
+.play-controls {
+  border-top: 10px solid black;
+}
+
+.admin-controls {
+  bottom: auto;
+  top: 0;
+  border-bottom: 10px solid black;
+}
+
+.admin-controls button {
+  flex-basis: 100%;
+}
+
+#game-message-passed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #EEE;
+  opacity: 0.9;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+  animation: mymove 0.5s;
+}
+
+#game-message-passed span {
+  height: 300px;
+  width: 100%;
+  background-color: red;
+  font-size: 6em;
+}
+
+@keyframes mymove {
+  0%   {display: block;}
+  25%  {background-color: green;}
+  50%  {background-color: yellow;}
+  75%  {background-color: red;}
+  100% {display: none;}
+}
+
+.container > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.container div.login-close-text-clear {
+  display: block;
+}
+
+#name-in-play {
+  font-size: 5em;
+}
+
+#game-screen h1 {
+  position: fixed;
+  top: 20px;
+  text-align: center;
+  left: 0;
+  right: 0;
+}
+
+#game-wrapper {
+  display: block;
+}
+
+#game-screen-stopped,
+#game-screen-user-list {
+  flex-basis: 100%;
+  display: block;
+}
+
+.countBox div,
+.root-react-component-countdown-timer,
+.root-react-component-countdown-timer div  {
+  display: inline;
+  font-size: 2em;
+}
+
+.countBox > div {
+  direction: rtl;
+}
+
+.countBox > div:nth-child(2) {
+  display: none;
+}
+
+
+
+
+  
 .new-task input {
   box-sizing: border-box;
   padding: 10px 0;

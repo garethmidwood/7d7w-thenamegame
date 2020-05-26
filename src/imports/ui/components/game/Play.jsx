@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import { Tasks } from '../../../api/tasks.js';
 import Task from '../../entities/Task.jsx';
+
+import Countdown from './Countdown.jsx';
 
 import { GameConfigs } from '../../../api/gameconfig.js';
 
@@ -12,68 +13,100 @@ class Play extends Component {
   handlePass(event) {
     event.preventDefault();
  
-    // Find the text field via the React ref
-    const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
- 
-    Meteor.call('tasks.insert', text);
+    console.log('passed');
+
+    Meteor.call('gameconfig.pass');
   }
 
   handleNext(event) {
     event.preventDefault();
- 
-    // Find the text field via the React ref
-    const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
- 
-    Meteor.call('tasks.insert', text);
+    
+    console.log('pressed next');
+
+    Meteor.call('gameconfig.next');
   }
 
-  renderNameList() {
-    let filteredTasks = this.props.tasks;
+  handleStop(event) {
+    event.preventDefault();
+    
+    if (!this.props.isAdmin) {
+      return;
+    }
 
-    return filteredTasks.map((task) => {
-      const currentUserId = this.props.currentUser && this.props.currentUser._id;
-      const showPrivateButton = task.owner === currentUserId;
- 
-      return (
-        <Task
-          key={task._id}
-          task={task}
-          showPrivateButton={showPrivateButton}
-        />
-      );
-    });
+    console.log('stopping the game');
+
+    Meteor.call('gameconfig.stop');
+  }
+
+  handleControlFormSubmit(event) {
+    event.preventDefault();
+
+    return false;
+  }
+
+  renderAdminControls() {
+    return (
+      <div id="game-screen">
+        <form className="game-controls admin-controls" onSubmit={this.handleControlFormSubmit.bind(this)}>
+          <button ref="passButton" onClick={this.handleStop.bind(this)}>Stop the game</button>
+        </form>
+      </div>
+    );    
+  }
+
+  renderYourePlaying() {
+    return (
+      <div id="game-screen">
+        <h1>You're playing, and the name is...</h1>
+
+        <span ref="gameMessagePassed" id="game-message-passed">
+          <span>Passed!</span>
+        </span>
+
+        <span id="name-in-play">
+          <span>
+            {this.props.activeName.value && this.props.activeName.value.name
+             ? this.props.activeName.value.name
+             : 'hold on...' }
+          </span>
+        </span>
+        
+        <Countdown />
+
+        <form className="game-controls play-controls" onSubmit={this.handleControlFormSubmit.bind(this)}>
+          <button ref="passButton" onClick={this.handlePass.bind(this)}>Pass</button>
+          <button ref="nextButton" onClick={this.handleNext.bind(this)}>Next</button>
+        </form>
+      </div>
+    );
+  }
+
+  renderSomeoneElsePlaying() {
+    return (
+      <div>
+        <h1>Game on!</h1>
+        
+        <Countdown />
+
+        { this.props.activePlayer.value && this.props.activePlayer.value.username
+          ? <h2>{this.props.activePlayer.value.username} is playing</h2>
+          : '' }
+      </div>
+    );   
   }
 
   render() { 
     return (
         <div>
-{/* 
-          <form className="new-task" onSubmit={this.handleNewTaskSubmit.bind(this)} >
-            <input
-              type="text"
-              ref="textInput"
-              placeholder="Type to add a new person"
-            />
-          </form> */}
-          
-{/* 
-          <ul>
-            {this.renderNameList()}
-          </ul>
- */}
-
-
-
-          <p>done button?</p>
-          <p>pass button?</p>
-          <p>How to make a persons turn end?</p>
-
-          <h1>
-          { this.props.activePlayer.value.name == this.props.currentUser.username ?
-            "It's your turn"
-            : this.props.activePlayer.value.name + " is playing"
+          { this.props.yourePlaying ?
+            this.renderYourePlaying() :
+            this.renderSomeoneElsePlaying()
           }
-          </h1>
+
+          {this.props.isAdmin
+          ? this.renderAdminControls()
+          : ''}
+
         </div>
     );
   }
@@ -86,6 +119,10 @@ export default withTracker(() => {
   return {
     tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
     currentUser: Meteor.user(),
-    activePlayer: GameConfigs.findOne("activePlayer")
+    activePlayer: GameConfigs.findOne("activePlayer"),
+    currentPlayerEndTime: GameConfigs.findOne("playerTurnCompleteTime"),
+    yourePlaying: ( Meteor.user() && GameConfigs.findOne("activePlayer").value && GameConfigs.findOne("activePlayer").value.username ==  Meteor.user().username),
+    isAdmin: (Meteor.user() && Meteor.user().username == 'gmidwood'),
+    activeName: GameConfigs.findOne("activeName"),
   };
 })(Play);
