@@ -20,7 +20,7 @@ class Countdown extends Component {
         var yourePlaying = this.props.yourePlaying;
 
         var settings = {
-            count: 30,
+            count: 5,
             border: true,
             showTitle: true,
             noPoints: true,

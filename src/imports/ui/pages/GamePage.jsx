@@ -32,10 +32,10 @@ class GamePage extends Component {
     );
   }
 
-  renderAdminControls() {
+  renderGameControls() {
     return (
       <form className="start-game game-controls play-controls" onSubmit={this.handleStartGame.bind(this)} >
-        <button>Start the game</button>
+        <button>Start your turn</button>
       </form>
     );
   }
@@ -51,9 +51,7 @@ class GamePage extends Component {
 
           <AddNames />
 
-          {this.props.isAdmin
-          ? this.renderAdminControls()
-          : ''}
+          {this.renderGameControls()}
         </div>
 
         <div id="game-screen-user-list">

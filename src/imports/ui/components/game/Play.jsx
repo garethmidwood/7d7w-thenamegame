@@ -90,6 +90,8 @@ class Play extends Component {
         
         <Countdown />
 
+        <p>{this.props.numberOfRemainingNames} names left in play</p>
+
         { this.props.activePlayer.value && this.props.activePlayer.value.username
           ? <h2>{this.props.activePlayer.value.username} is playing</h2>
           : '' }

@@ -94,12 +94,20 @@ const gameConfigFuncs = {
       { $set: { namesToPlay: newNamesStillToPlay } }
     );
 
-    // if there's nobody left to play then stop the round
+    // if there's nobody left to play then stop the round and refill the name/player lists
     if (newNamesStillToPlay.length == 0) {
       GameConfigs.update('inProgress', { $set: { value: false } });
+
+      var allUsers = this.getFullOnlineUserList();
+      var allNames = this.getFullNamesList();
+
+      GameConfigs.update(
+        'currentRound',
+        { $set: { usersToPlay: allUsers, namesToPlay: allNames } }
+      );
     }    
   },
-  chooseNextPlayerToPlay() {
+  chooseNextPlayerToPlay(userId) {
     if (!Meteor.isServer) {
       return;
     }
@@ -110,10 +118,14 @@ const gameConfigFuncs = {
       return;
     }
 
-    // randomly pick next player from those remaining
-    var randomIndex = Math.floor( Math.random() * playersStillToPlay.length );
-    var chosenPlayer = playersStillToPlay[randomIndex];
-    var nextPlayer = Meteor.users.findOne(chosenPlayer._id);
+    if (userId) {
+      var nextPlayer = Meteor.users.findOne(userId);
+    } else {
+      // randomly pick next player from those remaining
+      var randomIndex = Math.floor( Math.random() * playersStillToPlay.length );
+      var chosenPlayer = playersStillToPlay[randomIndex];
+      var nextPlayer = Meteor.users.findOne(chosenPlayer._id);
+    }
  
     console.log('setting next player to ', nextPlayer.username);
     GameConfigs.update('activePlayer', { $set: { value: nextPlayer } });
@@ -134,9 +146,14 @@ const gameConfigFuncs = {
       { $set: { usersToPlay: newPlayersStillToPlay } }
     );
 
-    // if there's nobody left to play then stop the round
+    // if there's nobody left to play then fill the list up with all players
     if (newPlayersStillToPlay.length == 0) {
-      GameConfigs.update('inProgress', { $set: { value: false } });
+      var allUsers = this.getFullOnlineUserList();
+
+      GameConfigs.update(
+        'currentRound',
+        { $set: { usersToPlay: allUsers } }
+      );
     }
   },
 
@@ -162,6 +179,24 @@ const gameConfigFuncs = {
     });
 
     return nameList;
+  },
+
+
+  gameInProgress() {
+    // if there are users playing then we assume we've started
+    return GameConfigs.findOne('currentRound').usersToPlay.length > 0;
+  },
+  prepareCurrentRoundConfig() {
+    // get a list of all the users that are currently online
+    var onlineUsers = gameConfigFuncs.getFullOnlineUserList();
+
+    // get a list of all of the names that have been added to the pot
+    var nameList = gameConfigFuncs.getFullNamesList();
+
+    GameConfigs.update(
+      'currentRound',
+      { $set: { usersToPlay: onlineUsers, namesToPlay: nameList, usersPlayed: [], namesPlayed: [] } }
+    );
   }
 };
  
@@ -175,19 +210,12 @@ Meteor.methods({
 
       GameConfigs.update('inProgress', { $set: { value: true } });
     
-      // get a list of all the users that are currently online
-      var onlineUsers = gameConfigFuncs.getFullOnlineUserList();
-
-      // get a list of all of the names that have been added to the pot
-      var nameList = gameConfigFuncs.getFullNamesList();
-
-      GameConfigs.update(
-        'currentRound',
-        { $set: { usersToPlay: onlineUsers, namesToPlay: nameList, usersPlayed: [], namesPlayed: [] } }
-      );
+      if (!gameConfigFuncs.gameInProgress()) {
+        gameConfigFuncs.prepareCurrentRoundConfig();
+      }
 
       console.log('about to choose the next player');
-      gameConfigFuncs.chooseNextPlayerToPlay();
+      gameConfigFuncs.chooseNextPlayerToPlay(this.userId);
 
       console.log('about to choose the next name to play');
       gameConfigFuncs.chooseNextNameToPlay();
@@ -215,7 +243,6 @@ Meteor.methods({
       if (!this.userId || this.userId != currentPlayer.value._id) {
         throw new Meteor.Error('not-authorized');
       }
-  
 
       gameConfigFuncs.removeCurrentNameFromToPlayList();
       gameConfigFuncs.chooseNextNameToPlay();
@@ -228,6 +255,8 @@ Meteor.methods({
       }
 
       gameConfigFuncs.removeCurrentPlayerFromToPlayList();
-      gameConfigFuncs.chooseNextPlayerToPlay();
+      // gameConfigFuncs.chooseNextPlayerToPlay();
+
+      GameConfigs.update('inProgress', { $set: { value: false } });
     }
   });
