@@ -26,6 +26,18 @@ class Play extends Component {
     Meteor.call('gameconfig.next');
   }
 
+  handleCancel(event) {
+    event.preventDefault();
+    
+    if (!this.props.isAdmin) {
+      return;
+    }
+
+    console.log('cancelling this turn');
+
+    Meteor.call('gameconfig.cancel');
+  }
+
   handleStop(event) {
     event.preventDefault();
     
@@ -33,7 +45,7 @@ class Play extends Component {
       return;
     }
 
-    console.log('stopping the game');
+    console.log('stopping this game');
 
     Meteor.call('gameconfig.stop');
   }
@@ -48,7 +60,7 @@ class Play extends Component {
     return (
       <div id="game-screen">
         <form className="game-controls admin-controls" onSubmit={this.handleControlFormSubmit.bind(this)}>
-          <button ref="passButton" onClick={this.handleStop.bind(this)}>Stop the game</button>
+          <button onClick={this.handleStop.bind(this)}>Cancel this turn</button>
         </form>
       </div>
     );    

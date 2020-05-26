@@ -94,15 +94,19 @@ form {
   z-index: 3;
 }
 
-
+.game-controls button {
+  height: auto;
+  font-size: 1.5em;
+  background-color: red;
+  margin: 0;
+  padding: 30px;
+  text-transform: uppercase;
+}
 
 .play-controls button,
 .admin-controls button {
   flex-basis: 50%;
   font-size: 2em;
-  margin: 0;
-  padding: 30px;
-  text-transform: uppercase;
   height: 300px;
   background-color: white;
 }
@@ -174,7 +178,7 @@ form {
 }
 
 #name-in-play {
-  font-size: 5em;
+  font-size: 4em;
 }
 
 #game-screen h1 {

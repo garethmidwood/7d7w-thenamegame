@@ -94,17 +94,9 @@ const gameConfigFuncs = {
       { $set: { namesToPlay: newNamesStillToPlay } }
     );
 
-    // if there's nobody left to play then stop the round and refill the name/player lists
+    // if there's nobody left to play then stop the round
     if (newNamesStillToPlay.length == 0) {
-      GameConfigs.update('inProgress', { $set: { value: false } });
-
-      var allUsers = this.getFullOnlineUserList();
-      var allNames = this.getFullNamesList();
-
-      GameConfigs.update(
-        'currentRound',
-        { $set: { usersToPlay: allUsers, namesToPlay: allNames } }
-      );
+      this.roundOver();
     }    
   },
   chooseNextPlayerToPlay(userId) {
@@ -187,16 +179,32 @@ const gameConfigFuncs = {
     return GameConfigs.findOne('currentRound').usersToPlay.length > 0;
   },
   prepareCurrentRoundConfig() {
-    // get a list of all the users that are currently online
-    var onlineUsers = gameConfigFuncs.getFullOnlineUserList();
+    // round over will reset the round config
+    this.roundOver();
+  },
+  roundOver() {
+    GameConfigs.update('inProgress', { $set: { value: false } });
 
-    // get a list of all of the names that have been added to the pot
-    var nameList = gameConfigFuncs.getFullNamesList();
+    var allUsers = this.getFullOnlineUserList();
+    var allNames = this.getFullNamesList();
 
     GameConfigs.update(
       'currentRound',
-      { $set: { usersToPlay: onlineUsers, namesToPlay: nameList, usersPlayed: [], namesPlayed: [] } }
+      { $set: { usersToPlay: allUsers, namesToPlay: allNames } }
     );
+  },
+  gameOver() {
+    GameConfigs.update('inProgress', { $set: { value: false } });
+    GameConfigs.update('activePlayer', { $set: { value: null } });
+    GameConfigs.update('activeName', { $set: { value: null } });
+    GameConfigs.update('playerTurnCompleteTime', { $set: { value: null } });
+    GameConfigs.update(
+      'currentRound',
+      { $set: { usersToPlay: [], namesToPlay: [] } }
+    );
+
+    // remove all the names too
+    Tasks.remove({});
   }
 };
  
@@ -207,8 +215,6 @@ Meteor.methods({
       if (!this.userId) {
         throw new Meteor.Error('not-authorized');
       }
-
-      GameConfigs.update('inProgress', { $set: { value: true } });
     
       if (!gameConfigFuncs.gameInProgress()) {
         gameConfigFuncs.prepareCurrentRoundConfig();
@@ -219,6 +225,16 @@ Meteor.methods({
 
       console.log('about to choose the next name to play');
       gameConfigFuncs.chooseNextNameToPlay();
+
+      GameConfigs.update('inProgress', { $set: { value: true } });
+    },
+    'gameconfig.cancel'() {
+      // Make sure the user is logged in before letting them cancel this turn
+      if (!this.userId) {
+        throw new Meteor.Error('not-authorized');
+      }
+  
+      GameConfigs.update('inProgress', { $set: { value: false } });
     },
     'gameconfig.stop'() {
       // Make sure the user is logged in before letting them stop the game
@@ -226,7 +242,7 @@ Meteor.methods({
         throw new Meteor.Error('not-authorized');
       }
   
-      GameConfigs.update('inProgress', { $set: { value: false } });
+      gameConfigFuncs.gameOver();
     },
     'gameconfig.pass'() {
       var currentPlayer = GameConfigs.findOne("activePlayer");

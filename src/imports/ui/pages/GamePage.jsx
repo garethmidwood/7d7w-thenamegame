@@ -20,6 +20,12 @@ class GamePage extends Component {
 
   handleStopGame(event) {
     event.preventDefault();
+
+    if (!this.props.isAdmin) {
+      return;
+    }
+
+    console.log('stopping this game');
  
     Meteor.call('gameconfig.stop');
   }
@@ -40,6 +46,14 @@ class GamePage extends Component {
     );
   }
 
+  renderAdminControls() {
+    return (
+      <form className="game-controls" onSubmit={this.handleStopGame.bind(this)} >
+        <button>stop this game</button>
+      </form>
+    );
+  }
+
   renderGameStopped() {
     return (
       <div id="game-wrapper">
@@ -47,9 +61,15 @@ class GamePage extends Component {
 
           <h1>The Name Game</h1>
 
-          <AccountsUIWrapper />
+          { this.props.gameStarted 
+           ? ''
+           : <AccountsUIWrapper />
+          }
 
-          <AddNames />
+          { this.props.gameStarted 
+           ? ''
+           : <AddNames />
+          }
 
           {this.renderGameControls()}
         </div>
@@ -57,6 +77,11 @@ class GamePage extends Component {
         <div id="game-screen-user-list">
           <OnlineUsers />
         </div>
+
+        { this.props.isAdmin 
+          ? this.renderAdminControls()
+          : ''
+        }
       </div>
     );
   }
@@ -79,6 +104,7 @@ export default withTracker(() => {
   return {
     gameconfig: GameConfigs.find({}).fetch(),
     gameInProgress: GameConfigs.findOne("inProgress"),
+    gameStarted: (GameConfigs.findOne('currentRound') && GameConfigs.findOne('currentRound').usersToPlay.length > 0),
     gameCurrentRound: GameConfigs.findOne("currentRound"),
     currentUser: Meteor.user(),
     isAdmin: (Meteor.user() && Meteor.user().username == 'gmidwood')
