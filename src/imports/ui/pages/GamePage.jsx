@@ -107,6 +107,6 @@ export default withTracker(() => {
     gameStarted: (GameConfigs.findOne('currentRound') && GameConfigs.findOne('currentRound').usersToPlay.length > 0),
     gameCurrentRound: GameConfigs.findOne("currentRound"),
     currentUser: Meteor.user(),
-    isAdmin: (Meteor.user() && Meteor.user().username == 'gmidwood')
+    isAdmin: (Meteor.user() && (Meteor.user().username == 'gmidwood' || Meteor.user().username == "Gmidwood")),
   };
 })(GamePage);

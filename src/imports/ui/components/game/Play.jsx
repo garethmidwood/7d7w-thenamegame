@@ -139,7 +139,7 @@ export default withTracker(() => {
     activePlayer: GameConfigs.findOne("activePlayer"),
     currentPlayerEndTime: GameConfigs.findOne("playerTurnCompleteTime"),
     yourePlaying: ( Meteor.user() && GameConfigs.findOne("activePlayer").value && GameConfigs.findOne("activePlayer").value.username ==  Meteor.user().username),
-    isAdmin: (Meteor.user() && Meteor.user().username == 'gmidwood'),
+    isAdmin: (Meteor.user() && (Meteor.user().username == 'gmidwood' || Meteor.user().username == "Gmidwood")),
     activeName: GameConfigs.findOne("activeName"),
   };
 })(Play);
